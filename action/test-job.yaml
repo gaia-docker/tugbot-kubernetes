@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: test-job
   labels:
-    tugbot.event.kubernetes: deployment
+    tugbot.kubernetes.events: deployment
 spec:
   template:
     metadata:
