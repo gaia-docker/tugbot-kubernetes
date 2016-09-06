@@ -1,7 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pi
+  name: test-job
+  labels:
+    tugbot.event.kubernetes: deployment
 spec:
   template:
     metadata:
