@@ -1,5 +1,5 @@
 hash: 5b6b151edb4a90b77de4e5740363863c738636e88c2ebb3c8ba77abad7f956e2
-updated: 2016-09-06T13:21:45.979822205+03:00
+updated: 2016-09-07T14:03:30.703456591+03:00
 imports:
 - name: github.com/blang/semver
   version: 31b736133b98f26d5e078ec9eb591666edfd091f
@@ -133,10 +133,22 @@ imports:
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
 - name: github.com/Sirupsen/logrus
   version: 51fe59aca108dc5680109e7b2051cbdcfa5a253c
 - name: github.com/spf13/pflag
   version: 1560c1005499d61b80f865c04d39ca7505bf7f0b
+- name: github.com/stretchr/objx
+  version: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
+- name: github.com/stretchr/testify
+  version: e3a8ff8ce36581f87a15341206f205b1da467059
+  subpackages:
+  - assert
+  - mock
+  - require
 - name: github.com/ugorji/go
   version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
   subpackages:
@@ -252,7 +264,7 @@ imports:
   - 1.4/pkg/apimachinery
   - 1.4/pkg/util/framer
 - name: k8s.io/kubernetes
-  version: 606e8fb34a72a4dad8a8105f24cd9a87980d09a2
+  version: dc529a03b1f116ae90f666ed9d87cd73b2643c0f
   subpackages:
   - pkg/api
   - pkg/client/cache
@@ -262,26 +274,22 @@ imports:
   - pkg/fields
   - pkg/util/wait
   - pkg/apis/batch
-  - pkg/api/resource
-  - pkg/api/unversioned
-  - pkg/conversion
-  - pkg/runtime
-  - pkg/types
-  - pkg/util/intstr
+  - pkg/watch
   - pkg/api/errors
+  - pkg/api/unversioned
   - pkg/api/v1
   - pkg/api/validation
   - pkg/client/metrics
   - pkg/client/transport
   - pkg/client/unversioned/clientcmd/api
   - pkg/labels
+  - pkg/runtime
   - pkg/runtime/serializer/streaming
   - pkg/util/crypto
   - pkg/util/flowcontrol
   - pkg/util/net
   - pkg/util/sets
   - pkg/version
-  - pkg/watch
   - pkg/watch/versioned
   - pkg/api/install
   - pkg/api/meta
@@ -304,20 +312,23 @@ imports:
   - pkg/apis/policy/install
   - pkg/apis/rbac
   - pkg/apis/rbac/install
+  - pkg/apis/storage
+  - pkg/apis/storage/install
   - pkg/client/typed/discovery
   - plugin/pkg/client/auth
   - pkg/api/meta/metatypes
+  - pkg/api/resource
   - pkg/auth/user
+  - pkg/conversion
   - pkg/runtime/serializer
   - pkg/selection
+  - pkg/types
+  - pkg/util/intstr
   - pkg/util/labels
   - pkg/util/rand
   - pkg/util/uuid
   - pkg/util/validation/field
-  - third_party/forked/golang/reflect
-  - pkg/conversion/queryparams
-  - pkg/util/errors
-  - pkg/util/json
+  - pkg/util/runtime
   - pkg/util
   - pkg/util/parsers
   - pkg/api/endpoints
@@ -328,11 +339,13 @@ imports:
   - pkg/capabilities
   - pkg/security/apparmor
   - pkg/util/config
+  - pkg/util/errors
   - pkg/util/validation
   - pkg/util/yaml
+  - pkg/conversion/queryparams
+  - pkg/util/json
   - pkg/util/clock
   - pkg/util/integer
-  - pkg/util/runtime
   - pkg/apimachinery
   - pkg/apis/apps/v1alpha1
   - pkg/apis/authentication/v1beta1
@@ -346,8 +359,10 @@ imports:
   - pkg/apis/extensions/v1beta1
   - pkg/apis/policy/v1alpha1
   - pkg/apis/rbac/v1alpha1
+  - pkg/apis/storage/v1beta1
   - plugin/pkg/client/auth/gcp
   - plugin/pkg/client/auth/oidc
+  - third_party/forked/golang/reflect
   - pkg/runtime/serializer/json
   - pkg/runtime/serializer/protobuf
   - pkg/runtime/serializer/recognizer
