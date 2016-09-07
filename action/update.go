@@ -34,8 +34,8 @@ func getTestJobs(kube client.JobInterface, event string) ([]batch.Job, error) {
 
 	var ret []batch.Job
 	for _, currJob := range jobs.Items {
-		if currJob.ObjectMeta.Labels[LabelTugbotEvents] == event &&
-			currJob.ObjectMeta.Labels[LabelTugbotCreatedFrom] == "" {
+		if currJob.Labels != nil && currJob.Labels[LabelTugbotEvents] == event &&
+			currJob.Labels[LabelTugbotCreatedFrom] == "" {
 			ret = append(ret, currJob)
 		}
 	}
@@ -56,6 +56,9 @@ func updateJobs(kube client.JobInterface, jobs []batch.Job) {
 func createJobFrom(job batch.Job) batch.Job {
 	from := job.Name
 	job.Name = fmt.Sprintf("tugbot.%s.%s", from, time.Now())
+	if job.Labels == nil {
+		job.Labels = make(map[string]string)
+	}
 	job.Labels[LabelTugbotCreatedFrom] = from
 
 	return job
