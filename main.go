@@ -1,38 +1,22 @@
 package main
 
 import (
-	"io/ioutil"
-	"log"
 	"os"
+	"os/user"
 	"path/filepath"
 
-	"github.com/ghodss/yaml"
-	"k8s.io/kubernetes/pkg/apis/batch"
+	log "github.com/Sirupsen/logrus"
 	"k8s.io/kubernetes/pkg/client/restclient"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
-	"os/user"
+
+	"github.com/gaia-docker/tugbot-kubernetes/action"
 )
 
 func main() {
-	createdJob, err := getKubernetesClient().BatchClient.Jobs("default").Create(getJob())
-	if err != nil {
-		log.Fatalln("Failed to unmarshal Job:", err)
-	}
-	log.Println("Job Created :)", createdJob)
+	kube := getKubernetesClient()
+	action.UpdateJobs(kube.Jobs(getNamespace()), "deployment")
 }
 
-func getJob() *batch.Job {
-	file, err := ioutil.ReadFile("job.yaml")
-	if err != nil {
-		log.Fatal("Failed to read file.", err)
-	}
-	var ret batch.Job
-	if err := yaml.Unmarshal(file, &ret); err != nil {
-		log.Fatalln("Failed to unmarshal Job.", err)
-	}
-
-	return &ret
-}
 func getKubernetesClient() *client.Client {
 	kubeCertPath := os.Getenv("KUBERNETES_CERT_PATH")
 	if kubeCertPath == "" {
@@ -42,7 +26,6 @@ func getKubernetesClient() *client.Client {
 			log.Fatalln("Failed to get home directory.", err)
 		}
 		kubeCertPath = filepath.Join(usr.HomeDir, ".minikube")
-		log.Println(kubeCertPath)
 	}
 	host := os.Getenv("KUBERNETES_HOST")
 	if host == "" {
@@ -61,4 +44,8 @@ func getKubernetesClient() *client.Client {
 	}
 
 	return ret
+}
+
+func getNamespace() string {
+	return "default"
 }
