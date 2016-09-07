@@ -6,15 +6,14 @@ import (
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gaia-docker/tugbot-kubernetes/action"
 	"k8s.io/kubernetes/pkg/client/restclient"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
-
-	"github.com/gaia-docker/tugbot-kubernetes/action"
 )
 
 func main() {
-	kube := getKubernetesClient()
-	action.UpdateJobs(kube.Jobs(getNamespace()), "deployment")
+	kube := getKubernetesClient().BatchClient.Jobs(getNamespace())
+	action.UpdateJobs(kube, "")
 }
 
 func getKubernetesClient() *client.Client {
