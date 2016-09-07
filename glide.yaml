@@ -1,0 +1,9 @@
+package: github.com/gaia-docker/tugbot-kubernetes
+import:
+- package: k8s.io/kubernetes/pkg/api
+- package: k8s.io/kubernetes/pkg/client/cache
+- package: k8s.io/kubernetes/pkg/client/restclient
+- package: k8s.io/kubernetes/pkg/client/unversioned
+- package: k8s.io/kubernetes/pkg/controller/framework
+- package: k8s.io/kubernetes/pkg/fields
+- package: k8s.io/kubernetes/pkg/util/wait
