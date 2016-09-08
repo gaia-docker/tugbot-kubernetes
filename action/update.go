@@ -46,9 +46,10 @@ func getTestJobs(kube client.JobInterface, event string) ([]batch.Job, error) {
 func updateJobs(kube client.JobInterface, jobs []batch.Job) {
 	for _, currJob := range jobs {
 		newJob := createJobFrom(currJob)
+		log.Infof("Creating job... (Original: %+v New: %+v)", currJob, newJob)
 		_, err := kube.Create(&newJob)
 		if err != nil {
-			log.Errorf("Failed to create rerun job (Original: %+v New: %+v). %v", currJob, newJob, err)
+			log.Errorf("Update job failed (Original: %+v New: %+v). %v", currJob, newJob, err)
 		}
 	}
 }
