@@ -56,7 +56,7 @@ func updateJobs(kube client.JobInterface, jobs []batch.Job) {
 
 func createJobFrom(job batch.Job) batch.Job {
 	from := job.Name
-	job.Name = fmt.Sprintf("tugbot.%s.%s", from, time.Now())
+	job.Name = fmt.Sprintf("tugbot.%s.%d", from, time.Now().UnixNano())
 	if job.Labels == nil {
 		job.Labels = make(map[string]string)
 	}

@@ -4,11 +4,13 @@ import (
 	"errors"
 	"testing"
 
+	"fmt"
 	"github.com/gaia-docker/tugbot-kubernetes/mockclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/batch"
+	"strings"
 )
 
 func TestUpdateJobs_FailedToGetListJobs(t *testing.T) {
@@ -52,13 +54,18 @@ func TestUpdateJobsCreatedByTugbot(t *testing.T) {
 }
 
 func TestUpdateJobs(t *testing.T) {
+	const name = "test-job"
 	kube := mockclient.NewMockClient()
 	kube.On("List", mock.Anything).Return(
 		&batch.JobList{Items: []batch.Job{
-			batch.Job{ObjectMeta: api.ObjectMeta{Labels: map[string]string{
-				LabelTugbotEvents: "deployment"}}}}},
+			batch.Job{ObjectMeta: api.ObjectMeta{
+				Name:   name,
+				Labels: map[string]string{LabelTugbotEvents: "deployment"}}}}},
 		nil).Once()
-	kube.On("Create", mock.Anything).Return(&batch.Job{}, nil).Once()
+	kube.On("Create", mock.Anything).Run(func(args mock.Arguments) {
+		assert.True(t, strings.HasPrefix(args.Get(0).(*batch.Job).Name,
+			fmt.Sprintf("tugbot.%s.", name)))
+	}).Return(&batch.Job{}, nil).Once()
 	err := UpdateJobs(kube, "deployment")
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
