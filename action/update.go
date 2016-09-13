@@ -6,9 +6,11 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gaia-docker/tugbot-kubernetes/common"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
+	"strings"
 )
 
 const (
@@ -16,7 +18,12 @@ const (
 	LabelTugbotCreatedFrom = "tugbot.created.from"
 )
 
-func UpdateJobs(kube client.JobInterface, event string) error {
+func UpdateJobs(kube client.JobInterface, event *api.Event) error {
+	log.Debug(event)
+	if event == nil {
+		return nil
+	}
+
 	jobs, err := getTestJobs(kube, event)
 	if err != nil {
 		return err
@@ -26,7 +33,7 @@ func UpdateJobs(kube client.JobInterface, event string) error {
 	return nil
 }
 
-func getTestJobs(kube client.JobInterface, event string) ([]batch.Job, error) {
+func getTestJobs(kube client.JobInterface, event *api.Event) ([]batch.Job, error) {
 	jobs, err := kube.List(api.ListOptions{})
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to get list jobs (%v)", err))
@@ -34,13 +41,23 @@ func getTestJobs(kube client.JobInterface, event string) ([]batch.Job, error) {
 
 	var ret []batch.Job
 	for _, currJob := range jobs.Items {
-		if currJob.Labels != nil && currJob.Labels[LabelTugbotEvents] == event &&
-			currJob.Labels[LabelTugbotCreatedFrom] == "" {
+		if currJob.Labels[LabelTugbotCreatedFrom] == "" &&
+			isJobContainsEvent(currJob, event) {
 			ret = append(ret, currJob)
 		}
 	}
 
 	return ret, nil
+}
+
+func isJobContainsEvent(job batch.Job, event *api.Event) bool {
+	ret := false
+	if job.Labels != nil {
+		jobEvents, ok := job.Labels[LabelTugbotEvents]
+		ret = ok && common.SliceContains(event.Reason, strings.Split(jobEvents, ","))
+	}
+
+	return ret
 }
 
 func updateJobs(kube client.JobInterface, jobs []batch.Job) {
