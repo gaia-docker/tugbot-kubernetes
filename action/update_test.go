@@ -30,7 +30,7 @@ func TestUpdateJobsNoTugbotEventLabelDefinedOnJob(t *testing.T) {
 	kube := mockclient.NewMockClient()
 	kube.On("List", mock.Anything).Return(
 		&batch.JobList{Items: []batch.Job{batch.Job{}}}, nil).Once()
-	err := UpdateJobs(kube, &api.Event{Reason: "ReplicaSet:SuccessfulCreate"})
+	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
@@ -52,7 +52,7 @@ func TestUpdateJobsTugbotEventNotMatch(t *testing.T) {
 		&batch.JobList{Items: []batch.Job{
 			batch.Job{ObjectMeta: api.ObjectMeta{Labels: map[string]string{LabelTugbotEvents: "Node:NodeHasSufficientDisk"}}}}},
 		nil).Once()
-	err := UpdateJobs(kube, &api.Event{Reason: "ReplicaSet:SuccessfulCreate"})
+	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
@@ -64,7 +64,7 @@ func TestUpdateJobsCreatedByTugbot(t *testing.T) {
 			batch.Job{ObjectMeta: api.ObjectMeta{Labels: map[string]string{
 				LabelTugbotEvents: "ReplicaSet:SuccessfulCreate", LabelTugbotCreatedFrom: "testing-pi"}}}}},
 		nil).Once()
-	err := UpdateJobs(kube, &api.Event{Reason: "ReplicaSet:SuccessfulCreate"})
+	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
@@ -82,7 +82,7 @@ func TestUpdateJobs(t *testing.T) {
 		assert.True(t, strings.HasPrefix(args.Get(0).(*batch.Job).Name,
 			fmt.Sprintf("tugbot.%s.", name)))
 	}).Return(&batch.Job{}, nil).Once()
-	err := UpdateJobs(kube, &api.Event{Reason: "ReplicaSet:SuccessfulCreate"})
+	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
@@ -95,7 +95,7 @@ func TestUpdateJobsErrorCreatingJob(t *testing.T) {
 				LabelTugbotEvents: "ReplicaSet:SuccessfulCreate"}}}}},
 		nil).Once()
 	kube.On("Create", mock.Anything).Return(&batch.Job{}, errors.New("Expected")).Once()
-	err := UpdateJobs(kube, &api.Event{Reason: "ReplicaSet:SuccessfulCreate"})
+	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
