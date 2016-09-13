@@ -19,11 +19,11 @@ const (
 )
 
 func UpdateJobs(kube client.JobInterface, event *api.Event) error {
-	log.Debug(event)
 	if event == nil {
 		return nil
 	}
 
+	log.Infof("Event: %s:%s, %s", event.InvolvedObject.Kind, event.Reason, event.Message)
 	jobs, err := getTestJobs(kube, event)
 	if err != nil {
 		return err
@@ -54,10 +54,14 @@ func isJobContainsEvent(job batch.Job, event *api.Event) bool {
 	ret := false
 	if job.Labels != nil {
 		jobEvents, ok := job.Labels[LabelTugbotEvents]
-		ret = ok && common.SliceContains(event.Reason, strings.Split(jobEvents, ","))
+		ret = ok && common.SliceContains(toString(event), strings.Split(jobEvents, ","))
 	}
 
 	return ret
+}
+
+func toString(event *api.Event) string {
+	return fmt.Sprintf("%s:%s", event.InvolvedObject.Kind, event.Reason)
 }
 
 func updateJobs(kube client.JobInterface, jobs []batch.Job) {
