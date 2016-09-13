@@ -44,6 +44,7 @@ func getKubernetesClient() *client.Client {
 			log.Fatalln("Failed to get home directory.", err)
 		}
 		kubeCertPath = filepath.Join(usr.HomeDir, ".minikube")
+		log.Infof("Looking for ca.crt, apiserver.crt, apiserver.key in %s", kubeCertPath)
 	}
 	host := os.Getenv("KUBERNETES_HOST")
 	if host == "" {
@@ -68,7 +69,7 @@ func getNamespace() string {
 	ret := os.Getenv("TUGBOT_KUBERNETES_NAMESPACE")
 	if ret == "" {
 		ret = api.NamespaceDefault
-		log.Infof("KUBERNETES_HOST is not defined, using %s", ret)
+		log.Infof("TUGBOT_KUBERNETES_NAMESPACE is not defined, using %s", ret)
 	}
 
 	return ret
