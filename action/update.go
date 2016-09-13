@@ -19,11 +19,11 @@ const (
 )
 
 func UpdateJobs(kube client.JobInterface, event *api.Event) error {
-	if event == nil {
-		return nil
+	if event == nil || event.InvolvedObject.Kind == "" || event.Reason == "" {
+		return errors.New("Invalid event")
 	}
 
-	log.Infof("Event: %s:%s, %s", event.InvolvedObject.Kind, event.Reason, event.Message)
+	log.Debugf("Event: %s:%s, %s", event.InvolvedObject.Kind, event.Reason, event.Message)
 	jobs, err := getTestJobs(kube, event)
 	if err != nil {
 		return err
