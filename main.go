@@ -30,9 +30,18 @@ func main() {
 }
 
 func initialize() {
+	setLogLevel()
 	namespace = getNamespace()
 	kube = getKubernetesClient()
 	stop = make(chan struct{})
+}
+
+func setLogLevel() {
+	if os.Getenv("TUGBOT_KUBERNETES_LOG_LEVEL") == "debug" {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
 }
 
 func getKubernetesClient() *client.Client {
