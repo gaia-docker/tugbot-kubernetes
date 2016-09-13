@@ -1,20 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
-	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gaia-docker/tugbot-kubernetes/action"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/client/cache"
 	"k8s.io/kubernetes/pkg/client/restclient"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 	"k8s.io/kubernetes/pkg/controller/framework"
 	"k8s.io/kubernetes/pkg/fields"
-	"k8s.io/kubernetes/pkg/util/wait"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -26,9 +26,10 @@ var (
 func main() {
 	initialize()
 	watchEvents()
+	waitForInterrupt()
 }
 
-func initialize()  {
+func initialize() {
 	namespace = getNamespace()
 	kube = getKubernetesClient()
 	stop = make(chan struct{})
@@ -86,14 +87,11 @@ func watchEvents() {
 				DeleteFunc: func(obj interface{}) {
 					updateJobs(obj)
 				},
-				UpdateFunc: func(oldObj, newObj interface{}) {
-					updateJobs(obj)
-				},
 			},
 		)
 		log.Info("Start watching for Kubernetes Events...")
 		eventController.Run(stop)
-	}
+	}()
 }
 
 func updateJobs(event interface{}) {
