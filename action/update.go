@@ -61,7 +61,7 @@ func isJobContainsEvent(job batch.Job, event *api.Event) bool {
 }
 
 func toString(event *api.Event) string {
-	return fmt.Sprintf("%s:%s", event.InvolvedObject.Kind, event.Reason)
+	return fmt.Sprintf("%s.%s", event.InvolvedObject.Kind, event.Reason)
 }
 
 func updateJobs(kube client.JobInterface, jobs []batch.Job) {

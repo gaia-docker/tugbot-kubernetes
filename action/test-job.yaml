@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: test-job
   labels:
-    tugbot.kubernetes.events: ReplicaSet:SuccessfulCreate
+    tugbot.kubernetes.events: ReplicaSet.SuccessfulCreate
 spec:
   template:
     metadata:
