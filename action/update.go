@@ -3,14 +3,15 @@ package action
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gaia-docker/tugbot-kubernetes/common"
 	"k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 	"strings"
+	"time"
 )
 
 const (
@@ -67,21 +68,30 @@ func toString(event *api.Event) string {
 func updateJobs(kube client.JobInterface, jobs []batch.Job) {
 	for _, currJob := range jobs {
 		newJob := createJobFrom(currJob)
-		log.Infof("Creating job... (Original: %+v New: %+v)", currJob, newJob)
+		log.Infof("Creating a job %s (from %s)...", newJob.Name, currJob.Name)
 		_, err := kube.Create(&newJob)
 		if err != nil {
-			log.Errorf("Update job failed (Original: %+v New: %+v). %v", currJob, newJob, err)
+			log.Errorf("Job creation failed: %v (Original: %+v New: %+v)", err, currJob, newJob)
+		} else {
+			log.Debug("New job %s created (Original: %+v New: %+v)", newJob.Name, currJob, newJob)
 		}
 	}
 }
 
 func createJobFrom(job batch.Job) batch.Job {
-	from := job.Name
-	job.Name = fmt.Sprintf("tugbot.%s.%d", from, time.Now().UnixNano())
-	if job.Labels == nil {
-		job.Labels = make(map[string]string)
+	ret := job
+	ret.Name = fmt.Sprintf("tugbot.%s.%d", job.Name, time.Now().UnixNano())
+	if ret.Labels == nil {
+		ret.Labels = make(map[string]string)
 	}
-	job.Labels[LabelTugbotCreatedFrom] = from
+	ret.Labels[LabelTugbotCreatedFrom] = job.Name
+	ret.Spec.Template.Labels = make(map[string]string)
+	ret.Spec.Selector.MatchLabels = make(map[string]string)
+	ret.Status = batch.JobStatus{}
+	ret.SelfLink = ""
+	ret.ResourceVersion = ""
+	ret.CreationTimestamp = unversioned.Time{}
+	ret.DeletionTimestamp = &unversioned.Time{}
 
-	return job
+	return ret
 }
