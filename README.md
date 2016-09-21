@@ -24,7 +24,7 @@ All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflic
 
 - `tugbot.kubernetes.events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
 
-#####Example Kubernetes Test Job (adding tugbot events' label to [Kubernetes example](http://kubernetes.io/docs/user-guide/jobs/#running-an-example-job/)), job.yaml:
+#####Example Kubernetes Test Job (adding tugbot events' label to [Kubernetes example](http://kubernetes.io/docs/user-guide/jobs/#running-an-example-job/)), *test-job.yaml*:
 ```yaml
 apiVersion: batch/v1
 kind: Job
