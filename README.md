@@ -1,4 +1,4 @@
-# tugbot-kubernetes
+# tugbot-kube
 [![CircleCI](https://circleci.com/gh/gaia-docker/tugbot-kubernetes.svg?style=shield)](https://circleci.com/gh/gaia-docker/tugbot-kubernetes)
 [![codecov](https://codecov.io/gh/gaia-docker/tugbot-kubernetes/branch/master/graph/badge.svg)](https://codecov.io/gh/gaia-docker/tugbot-kubernetes)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gaia-docker/tugbot-kubernetes)](https://goreportcard.com/report/github.com/gaia-docker/tugbot-kubernetes)
@@ -24,7 +24,7 @@ All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflic
 
 - `tugbot.kubernetes.events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
 
-#####Example Kubernetes Test Job creation (adding tugbot events' label to [Kubernetes example](https://gohugo.io/)), job.yaml:
+#####Example Kubernetes Test Job (adding tugbot events' label to [Kubernetes example](http://kubernetes.io/docs/user-guide/jobs/#running-an-example-job/)), job.yaml:
 ```yaml
 apiVersion: batch/v1
 kind: Job
