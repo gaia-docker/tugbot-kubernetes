@@ -10,8 +10,8 @@
 ## Kubernetes Test Job
 
 *Kubernetes Test Job* is a regular Kubernetes job. Docker & Kubernetes `LABEL` is used to discover *Kubernetes test job* and **Tugbot** related test metadata.
-**Tugbot Kubernetes** will trigger a sequential *test service* execution upon *event* (see `tugbot.event.swarm` label).
-
+**Tugbot Kube** will trigger a sequential *test job* execution upon *event* (see `tugbot.kubernetes.events` label).
+Running a *test job* should result running a *docker test container* (1 or more). In order to collect test results and depoly those results to elasticsearch, for example, you should [tugbot-collect](https://github.com/gaia-docker/tugbot-collect) related labels.
 ### Tugbot labels
 
 All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflict with other labels.
@@ -20,7 +20,7 @@ All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflic
 1) Container labels:
 - `tugbot.results.dir` - directory, where *test container* reports test results; default to `/var/tests/results`
 
-2) Swarm Service labels:
+2) Kubernetess Service labels:
 
 - `tugbot.kubernetes.events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
 
