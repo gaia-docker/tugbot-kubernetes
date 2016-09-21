@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	LabelTugbotEvents      = "tugbot.kubernetes.events"
-	LabelTugbotCreatedFrom = "tugbot.created.from"
+	LabelTugbotEvents    = "tugbot.kubernetes.events"
+	LabelTugbotTriggerBy = "tugbot.trigger.by"
 )
 
 func UpdateJobs(kube client.JobInterface, event *api.Event) error {
@@ -29,7 +29,7 @@ func UpdateJobs(kube client.JobInterface, event *api.Event) error {
 	if err != nil {
 		return err
 	}
-	updateJobs(kube, jobs)
+	updateJobs(kube, jobs, event)
 
 	return nil
 }
@@ -42,7 +42,7 @@ func getTestJobs(kube client.JobInterface, event *api.Event) ([]batch.Job, error
 
 	var ret []batch.Job
 	for _, currJob := range jobs.Items {
-		if currJob.Labels[LabelTugbotCreatedFrom] == "" &&
+		if currJob.Labels[LabelTugbotTriggerBy] == "" &&
 			isJobContainsEvent(currJob, event) {
 			ret = append(ret, currJob)
 		}
@@ -65,9 +65,9 @@ func toString(event *api.Event) string {
 	return fmt.Sprintf("%s.%s", event.InvolvedObject.Kind, event.Reason)
 }
 
-func updateJobs(kube client.JobInterface, jobs []batch.Job) {
+func updateJobs(kube client.JobInterface, jobs []batch.Job, event *api.Event) {
 	for _, currJob := range jobs {
-		newJob := createJobFrom(currJob)
+		newJob := createJobFrom(currJob, event)
 		log.Infof("Creating a job %s (from %s)...", newJob.Name, currJob.Name)
 		_, err := kube.Create(&newJob)
 		if err != nil {
@@ -78,13 +78,13 @@ func updateJobs(kube client.JobInterface, jobs []batch.Job) {
 	}
 }
 
-func createJobFrom(job batch.Job) batch.Job {
+func createJobFrom(job batch.Job, event *api.Event) batch.Job {
 	ret := job
 	ret.Name = fmt.Sprintf("tugbot.%s.%d", job.Name, time.Now().UnixNano())
 	if ret.Labels == nil {
 		ret.Labels = make(map[string]string)
 	}
-	ret.Labels[LabelTugbotCreatedFrom] = job.Name
+	ret.Labels[LabelTugbotTriggerBy] = toString(event)
 	ret.Spec.Template.Labels = make(map[string]string)
 	ret.Spec.Selector.MatchLabels = make(map[string]string)
 	ret.Status = batch.JobStatus{}

@@ -66,7 +66,7 @@ func TestUpdateJobsCreatedByTugbot(t *testing.T) {
 	kube.On("List", mock.Anything).Return(
 		&batch.JobList{Items: []batch.Job{
 			batch.Job{ObjectMeta: api.ObjectMeta{Labels: map[string]string{
-				LabelTugbotEvents: "ReplicaSet.SuccessfulCreate", LabelTugbotCreatedFrom: "testing-pi"}}}}},
+				LabelTugbotEvents: "ReplicaSet.SuccessfulCreate,Node.NodeHasSufficientDisk", LabelTugbotTriggerBy: "ReplicaSet.SuccessfulCreate"}}}}},
 		nil).Once()
 	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
 	assert.NoError(t, err)
