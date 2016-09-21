@@ -5,7 +5,7 @@ machine:
   services:
     - docker
   environment:
-    IMAGE_NAME: gaiadocker/tugbot-kubernetes
+    IMAGE_NAME: gaiadocker/tugbot-kube
     BUILDER_IMAGE_NAME: gaiadocker/tugbot-kubernetes-builder
 checkout:
   post:
