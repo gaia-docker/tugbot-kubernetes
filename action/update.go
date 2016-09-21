@@ -85,8 +85,15 @@ func createJobFrom(job batch.Job, event *api.Event) batch.Job {
 		ret.Labels = make(map[string]string)
 	}
 	ret.Labels[LabelTugbotTriggerBy] = toString(event)
-	ret.Spec.Template.Labels = make(map[string]string)
-	ret.Spec.Selector.MatchLabels = make(map[string]string)
+
+	fmt.Println(ret.Spec.Template)
+	if ret.Spec.Template.Labels != nil {
+		ret.Spec.Template.Labels = make(map[string]string)
+	}
+
+	if ret.Spec.Selector != nil && ret.Spec.Selector.MatchLabels != nil {
+		ret.Spec.Selector.MatchLabels = make(map[string]string)
+	}
 	ret.Status = batch.JobStatus{}
 	ret.SelfLink = ""
 	ret.ResourceVersion = ""
