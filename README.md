@@ -5,7 +5,7 @@
 [![Docker](https://img.shields.io/docker/pulls/gaiadocker/tugbot-kube.svg)](https://hub.docker.com/r/gaiadocker/tugbot-kube/)
 [![Docker Image Layers](https://imagelayers.io/badge/gaiadocker/tugbot-kube:latest.svg)](https://imagelayers.io/?images=gaiadocker/tugbot-kube:latest 'Get your own badge on imagelayers.io')
 
-**Tugbot** is a Continuous Testing Framework for Kubernetes based production/staging/testing environment. **Tugbot** executes *Kubernetes Test Jobs* upon some *event*, like Kubernetes node registration, deployment.
+**Tugbot Kube** is a Continuous Testing Framework for Kubernetes based production/staging/testing environment. **Tugbot** executes *Kubernetes Test Jobs* upon some *event*, like Kubernetes node registration, deployment.
 
 ## Kubernetes Test Job
 
@@ -24,7 +24,7 @@ All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflic
 
 - `tugbot.kubernetes.events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
 
-#####Example Kubernetes Test Job creation (adding tugbot event label to [Kubernetes example](https://gohugo.io/)), job.yaml:
+#####Example Kubernetes Test Job creation (adding tugbot events' label to [Kubernetes example](https://gohugo.io/)), job.yaml:
 ```yaml
 apiVersion: batch/v1
 kind: Job
