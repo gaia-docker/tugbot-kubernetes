@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	LabelTugbotEvents    = "tugbot.kubernetes.events"
-	LabelTugbotTriggerBy = "tugbot.trigger.by"
+	LabelTugbotEvents        = "tugbot.kubernetes.events"
+	LabelTugbotTriggerBy     = "tugbot.trigger.by"
+	LabelTugbotTriggerByName = "tugbot.trigger.by.name"
 )
 
 func UpdateJobs(kube client.JobInterface, event *api.Event) error {
@@ -85,12 +86,10 @@ func createJobFrom(job batch.Job, event *api.Event) batch.Job {
 		ret.Labels = make(map[string]string)
 	}
 	ret.Labels[LabelTugbotTriggerBy] = toString(event)
-
-	fmt.Println(ret.Spec.Template)
+	ret.Labels[LabelTugbotTriggerByName] = event.Name
 	if ret.Spec.Template.Labels != nil {
 		ret.Spec.Template.Labels = make(map[string]string)
 	}
-
 	if ret.Spec.Selector != nil && ret.Spec.Selector.MatchLabels != nil {
 		ret.Spec.Selector.MatchLabels = make(map[string]string)
 	}

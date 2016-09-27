@@ -74,19 +74,26 @@ func TestUpdateJobsCreatedByTugbot(t *testing.T) {
 }
 
 func TestUpdateJobs(t *testing.T) {
-	const name = "test-job"
+	const jobName = "test-job"
+	const eventName = "nginx-deployment-671724942"
 	kube := mockclient.NewMockClient()
 	kube.On("List", mock.Anything).Return(
 		&batch.JobList{Items: []batch.Job{
 			batch.Job{ObjectMeta: api.ObjectMeta{
-				Name:   name,
+				Name:   jobName,
 				Labels: map[string]string{LabelTugbotEvents: "Node.NodeHasSufficientDisk,ReplicaSet.SuccessfulCreate"}}}}},
 		nil).Once()
-	kube.On("Create", mock.Anything).Run(func(args mock.Arguments) {
-		assert.True(t, strings.HasPrefix(args.Get(0).(*batch.Job).Name,
-			fmt.Sprintf("tugbot.%s.", name)))
-	}).Return(&batch.Job{}, nil).Once()
-	err := UpdateJobs(kube, &api.Event{InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"}, Reason: "SuccessfulCreate"})
+	kube.On("Create", mock.Anything).Run(
+		func(args mock.Arguments) {
+			job := args.Get(0).(*batch.Job)
+			assert.True(t, strings.HasPrefix(job.Name, fmt.Sprintf("tugbot.%s.", jobName)))
+			assert.Equal(t, "ReplicaSet.SuccessfulCreate", job.Labels[LabelTugbotTriggerBy])
+			assert.Equal(t, eventName, job.Labels[LabelTugbotTriggerByName])
+		}).Return(&batch.Job{}, nil).Once()
+	err := UpdateJobs(kube, &api.Event{
+		ObjectMeta:     api.ObjectMeta{Name: eventName},
+		InvolvedObject: api.ObjectReference{Kind: "ReplicaSet"},
+		Reason:         "SuccessfulCreate"})
 	assert.NoError(t, err)
 	kube.AssertExpectations(t)
 }
