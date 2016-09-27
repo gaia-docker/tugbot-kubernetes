@@ -74,7 +74,7 @@ func updateJobs(kube client.JobInterface, jobs []batch.Job, event *api.Event) {
 		if err != nil {
 			log.Errorf("Job creation failed: %v (Original: %+v New: %+v)", err, currJob, newJob)
 		} else {
-			log.Debug("New job %s created (Original: %+v New: %+v)", newJob.Name, currJob, newJob)
+			log.Debugf("New job %s created (Original: %+v New: %+v)", newJob.Name, currJob, newJob)
 		}
 	}
 }
@@ -98,6 +98,7 @@ func createJobFrom(job batch.Job, event *api.Event) batch.Job {
 	ret.ResourceVersion = ""
 	ret.CreationTimestamp = unversioned.Time{}
 	ret.DeletionTimestamp = &unversioned.Time{}
+	ret.Spec.Template.Spec.RestartPolicy = api.RestartPolicyNever
 
 	return ret
 }

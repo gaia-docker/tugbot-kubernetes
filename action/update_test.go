@@ -89,6 +89,7 @@ func TestUpdateJobs(t *testing.T) {
 			assert.True(t, strings.HasPrefix(job.Name, fmt.Sprintf("tugbot.%s.", jobName)))
 			assert.Equal(t, "ReplicaSet.SuccessfulCreate", job.Labels[LabelTugbotTriggerBy])
 			assert.Equal(t, eventName, job.Labels[LabelTugbotTriggerByName])
+			assert.Equal(t, api.RestartPolicyNever, job.Spec.Template.Spec.RestartPolicy)
 		}).Return(&batch.Job{}, nil).Once()
 	err := UpdateJobs(kube, &api.Event{
 		ObjectMeta:     api.ObjectMeta{Name: eventName},
