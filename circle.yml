@@ -5,8 +5,8 @@ machine:
   services:
     - docker
   environment:
-    IMAGE_NAME: gaiadocker/tugbot-kubernetes
-    BUILDER_IMAGE_NAME: gaiadocker/tugbot-kubernetes-builder
+    IMAGE_NAME: gaiadocker/tugbot-kube
+    BUILDER_IMAGE_NAME: gaiadocker/tugbot-kube-builder
 checkout:
   post:
     - git fetch --unshallow || true
