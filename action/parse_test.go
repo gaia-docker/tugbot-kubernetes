@@ -6,7 +6,7 @@ import (
 )
 
 func TestToJob(t *testing.T) {
-	job, err := ToJob("test-job.yaml")
+	job, err := ToJob("../command/test-job.yaml")
 	assert.NoError(t, err)
 	assert.NotEqual(t, "", job.ObjectMeta.GetLabels()[LabelTugbotEvents])
 }
