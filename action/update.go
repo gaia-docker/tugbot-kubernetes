@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	LabelTugbotEvents        = "tugbot.kubernetes.events"
-	LabelTugbotTriggerBy     = "tugbot.trigger.by"
-	LabelTugbotTriggerByName = "tugbot.trigger.by.name"
+	LabelTugbotEvents        = "tugbot-kubernetes-events"
+	LabelTugbotTriggerBy     = "tugbot-trigger-by"
+	LabelTugbotTriggerByName = "tugbot-trigger-by-name"
 )
 
 func UpdateJobs(kube client.JobInterface, event *api.Event) error {

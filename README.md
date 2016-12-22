@@ -10,19 +10,19 @@
 ## Kubernetes Test Job
 
 *Kubernetes Test Job* is a regular Kubernetes job. Docker & Kubernetes `LABEL` is used to discover *Kubernetes test job* and **Tugbot** related test metadata.
-**Tugbot Kube** will trigger a sequential *test job* execution upon *event* (see `tugbot.kubernetes.events` label).
-Running a *test job* should result running a *docker test container* (1 or more). In order to collect test results and depoly those results to elasticsearch, add [tugbot-collect](https://github.com/gaia-docker/tugbot-collect) related labels  (see `tugbot.results.dir` label).
+**Tugbot Kube** will trigger a sequential *test job* execution upon *event* (see `tugbot-kubernetes-events` label).
+Running a *test job* should result running a *docker test container* (1 or more). In order to collect test results and depoly those results to elasticsearch, add [tugbot-collect](https://github.com/gaia-docker/tugbot-collect) related labels  (see `tugbot-results-dir` label).
 ### Tugbot labels
 
-All **Tugbot** labels must be prefixed with `tugbot.` to avoid potential conflict with other labels.
+All **Tugbot** labels must be prefixed with `tugbot-` to avoid potential conflict with other labels.
 **Tugbot** labels are divided into:
 
 1) Container labels:
-- `tugbot.results.dir` - directory, where *test container* reports test results; default to `/var/tests/results`
+- `tugbot-results-dir` - directory, where *test container* reports test results; default to `/var/tests/results`
 
 2) Kubernetess Service labels:
 
-- `tugbot.kubernetes.events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
+- `tugbot-kubernetes-events` - list of comma separated Kubernetes events format: Kind.Reason. For example: Node.Starting,ReplicaSet.SuccessfulCreate
 
 #####Example Kubernetes Test Job (add tugbot events' label to [Kubernetes example](http://kubernetes.io/docs/user-guide/jobs/#running-an-example-job/)), *test-job.yaml*:
 ```yaml
@@ -31,7 +31,7 @@ kind: Job
 metadata:
   name: pi
   labels:
-    tugbot.kubernetes.events: Node.Starting,ReplicaSet.SuccessfulCreate
+    tugbot-kubernetes-events: Node.Starting,ReplicaSet.SuccessfulCreate
 spec:
   template:
     metadata:
@@ -45,7 +45,7 @@ spec:
 ```
 > It is highly recommended to set `restartPolicy: Never` when creating a *Kubernetes Test Job*, so that it will listen for kubernetes events.
 
-> Use `tugbot.kubernetes.events: Node.Starting,ReplicaSet.SuccessfulCreate` *Kubernetes label* to tell tugbot framework that this is a test job that should be updated when each replica-set is successfuly created at node start.
+> Use `tugbot-kubernetes-events: Node.Starting,ReplicaSet.SuccessfulCreate` *Kubernetes label* to tell tugbot framework that this is a test job that should be updated when each replica-set is successfuly created at node start.
 
 ## Running Tugbot Kubernetes inside a Docker container
 ```bash
