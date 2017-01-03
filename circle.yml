@@ -5,8 +5,10 @@ machine:
   services:
     - docker
   environment:
-    IMAGE_NAME: gaiadocker/tugbot-kube
-    BUILDER_IMAGE_NAME: gaiadocker/tugbot-kube-builder
+    PROJECT_NAME: tugbot-kube
+    IMAGE_NAME: gaiadocker/$PROJECT_NAME
+    PROJECT_PATH: /go/src/github.com/gaia-docker/$PROJECT_NAME
+    BUILDER_IMAGE_NAME: gaiadocker/base-go-build
 checkout:
   post:
     - git fetch --unshallow || true
@@ -14,11 +16,8 @@ checkout:
     - export RELEASE_TAG=$(git describe --tags)
 dependencies:
   override:
-    - chmod u+x script/go_build.sh script/coverage.sh
-    # create builder image
-    - docker build -t $BUILDER_IMAGE_NAME -f Dockerfile.build .
     # run go build in a docker container
-    - docker run --rm -v "$PWD":/go/src/github.com/gaia-docker/tugbot-kubernetes $BUILDER_IMAGE_NAME script/go_build.sh
+    - docker run --rm -v "$PWD":$PROJECT_PATH -w $PROJECT_PATH $BUILDER_IMAGE_NAME /go/script/go_build.sh $PROJECT_NAME
     # create tugbot-kubernetes docker image
     - docker build -t $IMAGE_NAME .
     - docker tag $IMAGE_NAME $IMAGE_NAME:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
@@ -26,7 +25,7 @@ dependencies:
 test:
   override:
     # run tugbot-kubernetes tests and generate junit.xml reports
-    - docker run --rm -v "$PWD":/go/src/github.com/gaia-docker/tugbot-kubernetes $BUILDER_IMAGE_NAME script/coverage.sh
+    - docker run --rm -v "$PWD":$PROJECT_PATH -w $PROJECT_PATH $BUILDER_IMAGE_NAME /go/script/coverage.sh
   post:
     # copy test results
     - cp .cover/*_tests.xml $CIRCLE_TEST_REPORTS
